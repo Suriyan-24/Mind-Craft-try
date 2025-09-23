@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Your Website</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            color: #999;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            font-size: 16px;
+        }
+
+        .form-group input:focus + label,
+        .form-group input:not(:placeholder-shown) + label {
+            top: -10px;
+            left: 15px;
+            font-size: 12px;
+            color: #667eea;
+            background: white;
+            padding: 0 5px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+            color: #999;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #d63031;
+            display: none;
+        }
+
+        .success-message {
+            background: #e8f5e8;
+            color: #00b894;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #00b894;
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>Welcome</h1>
+            <p>Sign in to your account</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="email" id="email" placeholder=" " required>
+                <label for="email">Email Address</label>
+            </div>
+
+            <div class="form-group">
+                <input type="password" id="password" placeholder=" " required>
+                <label for="password">Password</label>
+                <span class="password-toggle" onclick="togglePassword()">👁️</span>
+            </div>
+
+            <button type="submit" class="login-btn">
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <span id="loginBtnText">Sign In</span>
+            </button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#" onclick="resetPassword()">Forgot your password?</a>
+        </div>
+
+        <div class="divider">
+            <span>or continue with</span>
+        </div>
+
+        <div class="social-login">
+            <button class="social-btn" onclick="signInWithGoogle()">
+                🔵 Google
+            </button>
+            <button class="social-btn" onclick="signInWithFacebook()">
+                📘 Facebook
+            </button>
+        </div>
+
+        <div class="signup-link">
+            Don't have an account? <a href="#" onclick="showSignup()">Sign up</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-firestore-compat.min.js"></script>
+
+    <script>
+        // Firebase Configuration (Replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "your-app-id"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.querySelector('.login-btn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        // Form submission handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await signInUser();
+        });
+
+        // Sign in function
+        async function signInUser() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            setLoading(true);
+            hideMessages();
+
+            try {
+                // Sign in with Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Store user session data
+                await storeUserSession(user);
+
+                showSuccess('Login successful! Redirecting...');
+
+                // Redirect to dashboard or main page
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html'; // Change this to your target page
+                }, 1500);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(getErrorMessage(error.code));
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Store user session and real-time data
+        async function storeUserSession(user) {
+            try {
+                // Get or create display name
+                const displayName = user.displayName || user.email.split('@')[0];
+                
+                // Create/update user document in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    email: user.email,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    isOnline: true,
+                    displayName: displayName,
+                    // Initialize default stats if new user
+                    stats: {
+                        intelligence: 50,
+                        focus: 50,
+                        stamina: 50,
+                        strategy: 50,
+                        willpower: 50,
+                        mentalClutter: 30
+                    },
+                    level: 1,
+                    xp: 0
+                }, { merge: true });
+
+                // Store user info in session storage for dashboard access
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: displayName
+                }));
+
+            } catch (error) {
+                console.error('Error storing user session:', error);
+            }
+        }
+
+        // Google Sign-In
+        async function signInWithGoogle() {
+            setLoading(true);
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                await storeUserSession(result.user);
+                showSuccess('Google sign-in successful!');
+                setTimeout(() => window.location.href = '/dashboard.html', 1500);
+            } catch (error) {
+                showError('Google sign-in failed: ' + error.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Facebook Sign-In
+        async function signInWithFacebook() {
+            setLoading(true);
+            try {
+                const provider = new firebase.auth.FacebookAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                await storeUserSession(result.user);
+                showSuccess('Facebook sign-in successful!');
+                setTimeout(() => window.location.href = '/dashboard.html', 1500);
+            } catch (error) {
+                showError('Facebook sign-in failed: ' + error.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Password reset
+        async function resetPassword() {
+            const email = prompt('Enter your email address:');
+            if (!email) return;
+
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showSuccess('Password reset email sent! Check your inbox.');
+            } catch (error) {
+                showError('Error sending reset email: ' + error.message);
+            }
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            
+            const toggle = document.querySelector('.password-toggle');
+            toggle.textContent = type === 'password' ? '👁️' : '🙈';
+        }
+
+        // Show signup (you can redirect to signup page)
+        function showSignup() {
+            window.location.href = '/signup.html'; // Change to your signup page
+        }
+
+        // Utility functions
+        function setLoading(isLoading) {
+            loginBtn.disabled = isLoading;
+            loadingSpinner.style.display = isLoading ? 'inline-block' : 'none';
+            loginBtnText.textContent = isLoading ? 'Signing In...' : 'Sign In';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/user-not-found':
+                    return 'No account found with this email address.';
+                case 'auth/wrong-password':
+                    return 'Incorrect password. Please try again.';
+                case 'auth/invalid-email':
+                    return 'Please enter a valid email address.';
+                case 'auth/too-many-requests':
+                    return 'Too many failed attempts. Please try again later.';
+                case 'auth/user-disabled':
+                    return 'This account has been disabled.';
+                default:
+                    return 'Login failed. Please check your credentials and try again.';
+            }
+        }
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in, redirect to dashboard
+                window.location.href = '/dashboard.html';
+            }
+        });
+
+        // Real-time user status updates
+        function setupRealtimeUpdates() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // Listen for real-time updates to user data
+                    db.collection('users').doc(user.uid).onSnapshot((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            console.log('Real-time user data:', userData);
+                            // Update UI with real-time data
+                        }
+                    });
+                }
+            });
+        }
+
+        // Initialize real-time updates
+        setupRealtimeUpdates();
+    </script>
+</body>
+</html>
