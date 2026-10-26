@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const app = express();
@@ -50,6 +50,13 @@ function createToken(user) {
 }
 
 // ====== Middleware: verify JWT ======
+function requireDatabase(req, res, next) {
+  if (!MONGO_URI || mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ success: false, message: 'Database is not configured or currently unavailable.' });
+  }
+  next();
+}
+
 function authMiddleware(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth) return res.status(401).json({ success: false, message: 'No token' });
@@ -65,7 +72,9 @@ function authMiddleware(req, res, next) {
 }
 
 // ====== Routes ======
-app.post('/api/register', async (req, res) => {
+app.get('/api/health', (req, res) => res.json({ status: 'ok', databaseConfigured: Boolean(MONGO_URI), databaseConnected: mongoose.connection.readyState === 1 }));
+
+app.post('/api/register', requireDatabase, async (req, res) => {
   const { username, password, email } = req.body;
   if (!username || !password) return res.json({ success: false, message: 'Missing fields' });
 
@@ -80,7 +89,7 @@ app.post('/api/register', async (req, res) => {
   res.json({ success: true, token, message: 'Registered successfully' });
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', requireDatabase, async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
   if (!user) return res.json({ success: false, message: 'Invalid credentials' });
@@ -93,7 +102,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Protected route example
-app.get('/api/me', authMiddleware, async (req, res) => {
+app.get('/api/me', requireDatabase, authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.id).select('-passwordHash');
   res.json({ success: true, user });
 });
