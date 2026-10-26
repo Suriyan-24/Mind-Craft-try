@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 
 // ====== Config ======
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mindcraft';
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecret'; // change in .env
+const MONGO_URI = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-only-change-me' : null);
 
 // ====== Connect DB ======
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -98,4 +98,8 @@ app.get('/api/me', authMiddleware, async (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;
