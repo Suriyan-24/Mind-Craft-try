@@ -1239,7 +1239,7 @@
     const username = document.getElementById("register-username").value;
     const password = document.getElementById("register-password").value;
 
-    const res = await fetch("http://localhost:5000/register", {
+    const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -1253,7 +1253,7 @@ async function loginUser() {
     const username = document.getElementById("login-username").value;
     const password = document.getElementById("login-password").value;
 
-    const res = await fetch("http://localhost:5000/login", {
+    const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
